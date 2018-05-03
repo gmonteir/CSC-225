@@ -1,0 +1,65 @@
+-26,328
+
+0011 0000 0000 0000   ; start the program at location 3000
+0101 001 001 1 00000  ; clear R1
+0101 010 010 1 00000  ; clear R2
+0101 011 011 1 00000  ; clear R3
+0001 011 011 1 10000  ; load R3 with #-16
+0010 000 011111011    ; get the data at x3100
+0001 010 010 1 00001  ; load the mask into R2
+0101 100 000 0 00 010 ; AND R0 and R2, put results in R4
+0000 010 000000001    ; skip next line if bit was a zero
+0001 001 001 1 00001  ; increment the ones counter
+0001 010 010 0 00 010 ; increment the mask
+0001 011 011 1 00001  ; increment the bits counter
+0000 100 111111010    ; do it again if the bits counter is not yet zero
+0011 001 011110100    ; store answer in x3101
+1111 0000 00100101    ; halt
+
+0011 0000 0000 0000   ; start the program at location 3000
+0101 001 001 1 00000  ; clear R1
+0101 010 010 1 00000  ; clear R2
+0101 011 011 1 00000  ; clear R3
+0101 100 100 1 00000  ; clear R4
+0001 100 100 1 01111  ; load R4 with #15
+0001 010 010 1 00001  ; load R2 with first mask
+0001 010 010 0 00 010 ; increment first mask
+0001 100 100 1 11111  ; decrement counter
+0000 001 111111101    ; repeat until first mask is x8000
+0010 000 011110110    ; get the data at x3100
+0001 011 011 1 00001  ; load R3 with second mask
+0001 100 100 1 01111  ; reset counter
+0101 110 110 1 00000  ; clear R6
+0101 101 100 1 11111  ; copy value in R4 into R5
+0001 101 101 1 11111  ; decrement second counter
+0001 110 110 1 00001  ; load R6 with third mask (used to decrement the first mask)
+0001 110 110 0 00 110 ; increment third mask
+0001 101 101 1 11111  ; decrement second counter
+0000 001 111111101    ; repeat until third mask is one bit less than first mask
+1001 110 110 1 11111  ; NOT the third mask
+0001 110 110 1 00001  ; increment the third mask (two's complement)
+0101 101 000 0 00 010 ; AND R0 and R2, put results in R5
+0000 010 000000001    ; skip next line if bit was a zero
+0001 001 001 0 00 011 ; add second mask to answer
+0001 010 010 0 00 110 ; decrement first mask
+0001 011 011 0 00 011 ; increment second mask
+0001 100 100 1 11111  ; decrement counter
+0000 001 111110000    ; repeat if bits counter is not yet zero
+0001 010 010 1 00001  ; increment R2 for one last check
+0101 101 000 0 00 010 ; AND R0 and R2, put results in R5
+0000 010 000000001    ; skip next line if bit was a zero
+0001 001 001 0 00 011 ; add second mask to answer
+0011 001 011100000    ; store answer in x3101
+1111 0000 00100101    ; halt
+
+.ORIG x3000
+AND R1,R1,#0
+AND R2,R2,#0
+AND R3,R3,#0
+AND R4,R4,#0
+ADD R4,R4,#15
+ADD R2,R2,#1
+FM ADD R2,R2,R2
+ADD R4,R4,#-1
+BRp FM
+LD 
